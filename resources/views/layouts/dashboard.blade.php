@@ -95,7 +95,6 @@
             @endif
 
             @if(auth()->user()->role->RoleName == 'Student')
-                <a href="{{ route('student.dashboard') }}" class="nav-item {{ request()->routeIs('student.dashboard') ? 'active' : '' }}"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="{{ route('student.browse') }}" class="nav-item {{ request()->routeIs('student.browse') ? 'active' : '' }}"><i class="fas fa-search"></i> Explore Courses</a>
                 <a href="{{ route('student.assessments') }}" class="nav-item {{ request()->routeIs('student.assessments') ? 'active' : '' }}"><i class="fas fa-tasks"></i> My Assessments</a>
                 <a href="{{ route('student.learning') }}" class="nav-item {{ request()->routeIs('student.learning') ? 'active' : '' }}"><i class="fas fa-graduation-cap"></i> My Learning</a>
