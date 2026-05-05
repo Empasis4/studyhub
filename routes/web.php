@@ -80,8 +80,13 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/force-migrate', function () {
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return "Migration successful! Output: <br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+        
+        return "Migration and Seeding successful! <br><br><b>Migration Output:</b><pre>{$migrateOutput}</pre><br><b>Seeding Output:</b><pre>{$seedOutput}</pre>";
     } catch (\Exception $e) {
-        return "Migration failed! Error: <br><pre>" . $e->getMessage() . "</pre>";
+        return "Database build failed! Error: <br><pre>" . $e->getMessage() . "</pre>";
     }
 });
