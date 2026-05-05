@@ -45,12 +45,12 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL', env('MYSQL_URL')),
-            'host' => env('DB_HOST', env('MYSQLHOST', '127.0.0.1')),
-            'port' => env('DB_PORT', env('MYSQLPORT', '3306')),
-            'database' => env('DB_DATABASE', env('MYSQLDATABASE', 'forge')),
-            'username' => env('DB_USERNAME', env('MYSQLUSER', 'forge')),
-            'password' => env('DB_PASSWORD', env('MYSQLPASSWORD', '')),
+            'url' => env('DATABASE_URL') ?: env('MYSQL_URL') ?: env('MYSQL_PRIVATE_URL'),
+            'host' => env('DB_HOST', env('MYSQLHOST', env('MYSQL_HOST', env('DATABASE_HOST', '127.0.0.1')))),
+            'port' => env('DB_PORT', env('MYSQLPORT', env('MYSQL_PORT', env('DATABASE_PORT', '3306')))),
+            'database' => env('DB_DATABASE', env('MYSQLDATABASE', env('MYSQL_DATABASE', env('DATABASE_NAME', 'forge')))),
+            'username' => env('DB_USERNAME', env('MYSQLUSER', env('MYSQL_USER', env('DATABASE_USER', 'forge')))),
+            'password' => env('DB_PASSWORD', env('MYSQLPASSWORD', env('MYSQL_PASSWORD', env('DATABASE_PASSWORD', '')))),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
