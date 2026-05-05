@@ -32,20 +32,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Force HTTPS in production (Railway)
+        // Force HTTPS and correct Database name in production (Railway)
         if (config('app.env') === 'production' || env('RAILWAY_ENVIRONMENT')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            
+            // Forcibly override the database name to match Railway's provisioning
+            $dbName = env('MYSQLDATABASE', env('MYSQL_DATABASE', 'studyhub_db'));
+            config(['database.connections.mysql.database' => $dbName]);
             
             try {
                 // Check if tables exist, if not, build them!
                 if (!\Illuminate\Support\Facades\Schema::hasTable('users')) {
-                    error_log("DATABASE: No 'users' table found. Starting automatic migration...");
+                    error_log("DATABASE: No 'users' table found in $dbName. Starting automatic migration...");
                     \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
                     error_log("DATABASE: Automatic migration and seeding complete!");
                 }
             } catch (\Exception $e) {
-                error_log("CRITICAL DATABASE ERROR: " . $e->getMessage());
+                error_log("CRITICAL DATABASE ERROR in $dbName: " . $e->getMessage());
             }
         }
     }
