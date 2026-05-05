@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'file'),
+    'driver' => env('SESSION_DRIVER') ?: (env('RAILWAY_ENVIRONMENT') ? 'cookie' : 'file'),
 
     /*
     |--------------------------------------------------------------------------
