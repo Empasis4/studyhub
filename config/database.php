@@ -45,7 +45,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL') ?: env('MYSQL_URL') ?: env('MYSQL_PRIVATE_URL'),
+            'url' => env('MYSQL_PRIVATE_URL') ?: env('MYSQL_URL') ?: env('DATABASE_URL'),
             'host' => env('DB_HOST') && env('DB_HOST') !== '127.0.0.1' ? env('DB_HOST') : env('MYSQLHOST', env('MYSQL_HOST', 'mysql.railway.internal')),
             'port' => env('DB_PORT', env('MYSQLPORT', env('MYSQL_PORT', '3306'))),
             'database' => env('DB_DATABASE') && env('DB_DATABASE') !== 'forge' ? env('DB_DATABASE') : env('MYSQLDATABASE', env('MYSQL_DATABASE', 'studyhub_db')),
