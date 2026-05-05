@@ -13,7 +13,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Force-map Railway variables to Laravel config
+        if (env('MYSQLHOST')) {
+            config([
+                'database.connections.mysql.host' => env('MYSQLHOST'),
+                'database.connections.mysql.port' => env('MYSQLPORT'),
+                'database.connections.mysql.database' => env('MYSQLDATABASE'),
+                'database.connections.mysql.username' => env('MYSQLUSER'),
+                'database.connections.mysql.password' => env('MYSQLPASSWORD'),
+            ]);
+        }
     }
 
     /**
