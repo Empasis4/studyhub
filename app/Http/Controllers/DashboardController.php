@@ -259,15 +259,22 @@ class DashboardController extends Controller
     public function manageAssessments()
     {
         $user = auth()->user();
-        $assessments = Assessment::whereHas('lesson.module', fn($q) => $q->where('TutorID', $user->UserID))
+        
+        // Show assessments if the tutor owns the module OR the lesson
+        $assessments = Assessment::whereHas('lesson', function($q) use ($user) {
+                $q->where('TutorID', $user->UserID)
+                  ->orWhereHas('module', fn($mq) => $mq->where('TutorID', $user->UserID));
+            })
             ->with(['lesson.module.course', 'submissions.student'])
             ->withCount('submissions')
             ->latest()
             ->paginate(15);
         
-        // Get lessons for this tutor for the dropdown
-        $lessons = Lesson::whereHas('module', fn($q) => $q->where('TutorID', $user->UserID))
-            ->with('module.course')->get();
+        // Get only lessons belonging to this tutor
+        $lessons = Lesson::where('TutorID', $user->UserID)
+            ->orWhereHas('module', fn($q) => $q->where('TutorID', $user->UserID))
+            ->with('module.course')
+            ->get();
         
         return view('dashboards.assessments', compact('assessments', 'lessons'));
     }
@@ -290,6 +297,9 @@ class DashboardController extends Controller
         }
 
         Assessment::create($data);
+        
+        SystemLog::record('Created assessment task for Lesson #' . $request->LessonID, $request);
+        
         return redirect()->route('tutor.assessments')->with('status', 'Assessment created successfully!');
     }
 
@@ -412,8 +422,8 @@ class DashboardController extends Controller
         $enrolledCourseIDs = Enrollment::where('StudentID', $user->UserID)->pluck('CourseID');
         
         $pendingAssessments = Assessment::with(['lesson.module.course'])
-            ->whereHas('lesson.module.course', function($q) use ($enrolledCourseIDs) {
-                $q->whereIn('courses.CourseID', $enrolledCourseIDs);
+            ->whereHas('lesson.module', function($q) use ($enrolledCourseIDs) {
+                $q->whereIn('CourseID', $enrolledCourseIDs);
             })
             ->whereDoesntHave('submissions', function($q) use ($user) {
                 $q->where('StudentID', $user->UserID);
