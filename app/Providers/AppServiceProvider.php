@@ -35,9 +35,14 @@ class AppServiceProvider extends ServiceProvider
         // Automatically run migrations in production (Railway)
         if (config('app.env') === 'production' || env('RAILWAY_ENVIRONMENT')) {
             try {
+                // Test connection
+                \Illuminate\Support\Facades\DB::connection()->getPdo();
+                
                 \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+                \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
             } catch (\Exception $e) {
-                // Fail silently to allow app to boot
+                // If this fails, we NEED to know why in the logs
+                error_log("CRITICAL DATABASE ERROR: " . $e->getMessage());
             }
         }
     }
