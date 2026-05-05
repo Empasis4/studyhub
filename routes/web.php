@@ -74,3 +74,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifications/mark-as-read/{id}', [DashboardController::class, 'markAsRead'])->name('notifications.markRead');
     Route::get('/api/notifications/latest', [DashboardController::class, 'getLatestNotifications'])->name('api.notifications.latest');
 });
+
+// Manual Migration Tool (Foolproof Fix)
+Route::get('/force-migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migration successful! Output: <br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Migration failed! Error: <br><pre>" . $e->getMessage() . "</pre>";
+    }
+});
