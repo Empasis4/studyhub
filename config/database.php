@@ -45,12 +45,12 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('MYSQL_PRIVATE_URL') ?: env('MYSQL_URL') ?: env('DATABASE_URL'),
-            'host' => env('DB_HOST') && env('DB_HOST') !== '127.0.0.1' ? env('DB_HOST') : env('MYSQLHOST', env('MYSQL_HOST', 'mysql.railway.internal')),
-            'port' => env('DB_PORT', env('MYSQLPORT', env('MYSQL_PORT', '3306'))),
-            'database' => env('DB_DATABASE') && env('DB_DATABASE') !== 'forge' ? env('DB_DATABASE') : env('MYSQLDATABASE', env('MYSQL_DATABASE', 'studyhub_db')),
-            'username' => env('DB_USERNAME') && env('DB_USERNAME') !== 'forge' ? env('DB_USERNAME') : env('MYSQLUSER', env('MYSQL_USER', 'studyhub_db')),
-            'password' => env('DB_PASSWORD') ?: env('MYSQLPASSWORD') ?: env('MYSQL_PASSWORD') ?: env('DATABASE_PASSWORD') ?: env('MYSQL_ROOT_PASSWORD') ?: '',
+            'url' => env('DATABASE_URL') ?: env('MYSQL_URL'),
+            'host' => env('MYSQLHOST') ?: env('DB_HOST', '127.0.0.1'),
+            'port' => env('MYSQLPORT') ?: env('DB_PORT', '3306'),
+            'database' => env('MYSQLDATABASE') ?: env('DB_DATABASE', 'forge'),
+            'username' => env('MYSQLUSER') ?: env('DB_USERNAME', 'forge'),
+            'password' => env('MYSQLPASSWORD') ?: env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
