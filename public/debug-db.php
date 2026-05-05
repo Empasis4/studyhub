@@ -39,5 +39,16 @@ try {
 } catch (\PDOException $e) {
     echo "<h2 style='color: red;'>❌ FAILURE: Could not connect to database</h2>";
     echo "<p><strong>Error Message:</strong> " . $e->getMessage() . "</p>";
-    echo "<p><strong>Helpful Tip:</strong> Ensure you have linked the MySQL service to the App service in the Railway Project Canvas.</p>";
+    
+    echo "<h3>Available Environment Variable Keys (Variable Hunter):</h3>";
+    echo "<ul>";
+    foreach ($_SERVER as $key => $value) {
+        if (strpos($key, 'MYSQL') !== false || strpos($key, 'DATABASE') !== false || strpos($key, 'DB_') !== false) {
+            echo "<li><strong>$key</strong> (Found)</li>";
+        } else {
+            // echo "<li>$key</li>"; // Hidden for brevity
+        }
+    }
+    echo "</ul>";
+    echo "<p><strong>Helpful Tip:</strong> If the list above is empty, you MUST link the MySQL service to the App service in the Railway Canvas.</p>";
 }
