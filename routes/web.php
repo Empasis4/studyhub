@@ -1,4 +1,5 @@
 <?php
+// Triggering fresh database redeploy...
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
