@@ -32,8 +32,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Automatically run migrations in production (Railway)
+        // Force HTTPS in production (Railway)
         if (config('app.env') === 'production' || env('RAILWAY_ENVIRONMENT')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            
             try {
                 // Test connection
                 \Illuminate\Support\Facades\DB::connection()->getPdo();
@@ -41,7 +43,6 @@ class AppServiceProvider extends ServiceProvider
                 \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
                 \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
             } catch (\Exception $e) {
-                // If this fails, we NEED to know why in the logs
                 error_log("CRITICAL DATABASE ERROR: " . $e->getMessage());
             }
         }
