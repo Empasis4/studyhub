@@ -88,9 +88,9 @@
             @endif
 
             @if(auth()->user()->role->RoleName == 'Tutor')
-                <a href="{{ route('tutor.courses') }}" class="nav-item {{ Request::is('*/my-courses') ? 'active' : '' }}"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
-                <a href="{{ route('tutor.modules') }}" class="nav-item {{ Request::is('*/modules') && !Request::is('*/modules/create') ? 'active' : '' }}"><i class="fas fa-layer-group"></i> Modules</a>
-                <a href="{{ route('tutor.lessons') }}" class="nav-item {{ Request::is('*/lessons') && !Request::is('*/lessons/add') ? 'active' : '' }}"><i class="fas fa-play-circle"></i> Lessons</a>
+                <a href="{{ route('tutor.courses') }}" class="nav-item {{ request()->routeIs('tutor.courses') ? 'active' : '' }}"><i class="fas fa-chalkboard-teacher"></i> My Courses</a>
+                <a href="{{ route('tutor.modules') }}" class="nav-item {{ request()->routeIs('tutor.modules') ? 'active' : '' }}"><i class="fas fa-layer-group"></i> Modules</a>
+                <a href="{{ route('tutor.lessons') }}" class="nav-item {{ request()->routeIs('tutor.lessons') ? 'active' : '' }}"><i class="fas fa-play-circle"></i> Lessons</a>
                 <a href="{{ route('tutor.assessments') }}" class="nav-item {{ Request::is('*/assessments*') ? 'active' : '' }}"><i class="fas fa-file-invoice"></i> Assessments</a>
                 <a href="{{ route('tutor.students') }}" class="nav-item {{ Request::is('*/students') ? 'active' : '' }}"><i class="fas fa-users"></i> Enrolled Students</a>
             @endif

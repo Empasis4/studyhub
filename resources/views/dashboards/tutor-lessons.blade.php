@@ -37,8 +37,8 @@
                     <div style="font-weight:600; color: white;">{{ $lesson->Title }}</div>
                 </td>
                 <td style="padding:1.25rem;">
-                    <div style="font-size:0.9rem;">{{ $lesson->module->ModuleTitle ?? 'N/A' }}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ $lesson->module->course->Title ?? 'N/A' }}</div>
+                    <div style="font-size:0.9rem;">{{ $lesson->module->ModuleTitle ?? 'No Module' }}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">{{ $lesson->module->course->Title ?? 'Unknown Course' }}</div>
                 </td>
                 <td style="padding:1.25rem;">
                     <span class="badge badge-purple">{{ $lesson->ContentType }}</span>
@@ -84,7 +84,7 @@
                 <select name="ModuleID" required style="width:100%; padding:0.9rem; background:var(--bg-dark); border:1px solid var(--glass-border); border-radius:12px; color:white; outline: none; appearance: none;">
                     <option value="" disabled selected>— Choose a module —</option>
                     @foreach($modules as $mod)
-                        <option value="{{ $mod->ModuleID }}">{{ $mod->course->Title ?? 'N/A' }} › {{ $mod->ModuleTitle }}</option>
+                        <option value="{{ $mod->ModuleID }}">{{ $mod->course->Title ?? 'Unknown' }} › {{ $mod->ModuleTitle }}</option>
                     @endforeach
                 </select>
             </div>

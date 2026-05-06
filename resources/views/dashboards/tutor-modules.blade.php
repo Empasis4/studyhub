@@ -37,7 +37,7 @@
                     <div style="font-weight:600; color: white;">{{ $mod->ModuleTitle }}</div>
                 </td>
                 <td style="padding:1.25rem; color:var(--text-muted);">
-                    {{ $mod->course->Title ?? 'Unassigned' }}
+                    {{ $mod->course->Title ?? 'Unassigned Course' }}
                 </td>
                 <td style="padding:1.25rem; color:var(--text-muted);">
                     {{ $mod->created_at->format('M d, Y') }}
