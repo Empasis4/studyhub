@@ -79,4 +79,24 @@
     </div>
     @endforelse
 </div>
+<script>
+    // Simple auto-refresh every 60 seconds to check for new assessments
+    setTimeout(function() {
+        location.reload();
+    }, 60000);
+</script>
+
+<div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 100;">
+    <button onclick="location.reload()" class="btn btn-primary" style="border-radius: 50px; padding: 1rem 1.5rem; box-shadow: 0 10px 25px rgba(99,102,241,0.4); animation: pulse 2s infinite;">
+        <i class="fas fa-sync-alt" style="margin-right: 0.5rem;"></i>Refresh Data
+    </button>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99,102,241,0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(99,102,241,0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    }
+</style>
 @endsection

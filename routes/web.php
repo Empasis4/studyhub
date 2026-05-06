@@ -142,11 +142,11 @@ Route::get('/force-migrate', function () {
         \Illuminate\Support\Facades\Artisan::call('storage:link');
         $output .= "<b>4. Storage Link:</b> Storage symlink force-recreated.<br>";
 
-        // 5. Performance Optimization: Cache all configurations and routes
-        \Illuminate\Support\Facades\Artisan::call('config:cache');
-        \Illuminate\Support\Facades\Artisan::call('route:cache');
-        \Illuminate\Support\Facades\Artisan::call('view:cache');
-        $output .= "<b>5. Performance:</b> System optimized (Config/Route/View cache enabled).<br>";
+        // 5. System Cleanup: Clear all caches to ensure data is live
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        $output .= "<b>5. Performance:</b> System cleaned (Live data mode enabled).<br>";
 
         // 6. Seed Data
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
