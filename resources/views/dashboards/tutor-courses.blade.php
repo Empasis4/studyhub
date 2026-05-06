@@ -6,7 +6,7 @@
 <div class="glass-card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h3>Assigned Curriculum</h3>
-        <a href="{{ route('tutor.modules.create') }}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">+ Create New Module</a>
+        <a href="{{ route('tutor.modules') }}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem; text-decoration: none;">+ Manage Modules</a>
     </div>
     
     <div class="course-grid" style="margin-top: 0;">
@@ -20,7 +20,7 @@
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                 {{ $course->Description ?? 'No description available for this course.' }}
             </p>
-            <a href="{{ route('tutor.lessons.add', ['course_id' => $course->CourseID]) }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; text-decoration: none;">Edit Curriculum</a>
+            <a href="{{ route('tutor.lessons') }}" class="btn btn-primary" style="width: 100%; text-align: center; display: block; text-decoration: none;">Manage Lessons</a>
         </div>
         @endforeach
 
