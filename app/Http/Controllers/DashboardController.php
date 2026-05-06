@@ -416,15 +416,16 @@ class DashboardController extends Controller
             ->where('StudentID', $user->UserID)
             ->get();
 
-        $enrolledCourseIDs = Enrollment::where('StudentID', $user->UserID)->pluck('CourseID');
+        $enrolledCourseIDs = Enrollment::where('StudentID', $user->UserID)->pluck('CourseID')->toArray();
         
-        $pendingAssessments = Assessment::with(['lesson.module.course'])
-            ->whereHas('lesson.module', function($q) use ($enrolledCourseIDs) {
-                $q->whereIn('CourseID', $enrolledCourseIDs);
-            })
+        $pendingAssessments = Assessment::join('lessons', 'assessments.LessonID', '=', 'lessons.LessonID')
+            ->join('modules', 'lessons.ModuleID', '=', 'modules.ModuleID')
+            ->whereIn('modules.CourseID', $enrolledCourseIDs)
             ->whereDoesntHave('submissions', function($q) use ($user) {
                 $q->where('StudentID', $user->UserID);
             })
+            ->select('assessments.*')
+            ->with(['lesson.module.course'])
             ->get();
 
         return view('dashboards.student_assessments', compact('submissions', 'pendingAssessments'));

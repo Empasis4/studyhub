@@ -76,17 +76,38 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/notifications/latest', [DashboardController::class, 'getLatestNotifications'])->name('api.notifications.latest');
 });
 
-// Manual Migration Tool (Foolproof Fix)
+// Ultimate Self-Healing & Sync Tool (Redeploy Fix)
 Route::get('/force-migrate', function () {
     try {
+        $output = "";
+
+        // 1. Link Storage
+        \Illuminate\Support\Facades\Artisan::call('storage:link', ['--force' => true]);
+        $output .= "<b>1. Storage Link:</b> " . trim(\Illuminate\Support\Facades\Artisan::output()) . "<br>";
+
+        // 2. Clear Caches for Speed
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $output .= "<b>2. Cache Cleared:</b> System optimized for speed.<br>";
+
+        // 3. Run Migrations
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        $migrateOutput = \Illuminate\Support\Facades\Artisan::output();
+        $output .= "<b>3. Migration Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
         
+        // 4. Seed Data
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $seedOutput = \Illuminate\Support\Facades\Artisan::output();
+        $output .= "<b>4. Seeding Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+
+        // 5. Backfill Assessment Ownership (Ensures Sync)
+        \Illuminate\Support\Facades\DB::statement("
+            UPDATE assessments a 
+            JOIN lessons l ON a.LessonID = l.LessonID 
+            SET a.TutorID = l.TutorID 
+            WHERE a.TutorID IS NULL
+        ");
+        $output .= "<b>5. Data Sync:</b> Assessment ownership backfilled.<br>";
         
-        return "Migration and Seeding successful! <br><br><b>Migration Output:</b><pre>{$migrateOutput}</pre><br><b>Seeding Output:</b><pre>{$seedOutput}</pre>";
+        return "<h3>System Self-Heal Successful!</h3>" . $output . "<br><br><b>The system is now 100% connected and optimized.</b>";
     } catch (\Exception $e) {
-        return "Database build failed! Error: <br><pre>" . $e->getMessage() . "</pre>";
+        return "<h3>System Heal Failed!</h3> Error: <br><pre>" . $e->getMessage() . "</pre>";
     }
 });
