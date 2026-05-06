@@ -135,9 +135,12 @@ Route::get('/force-migrate', function () {
 
         $output .= "<b>3. Migration Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
         
-        // 4. Storage Link: Ensure files are publicly accessible
+        // 4. Storage Link: Force recreate symlink
+        if (file_exists(public_path('storage'))) {
+            @unlink(public_path('storage'));
+        }
         \Illuminate\Support\Facades\Artisan::call('storage:link');
-        $output .= "<b>4. Storage Link:</b> Storage symlink recreated successfully.<br>";
+        $output .= "<b>4. Storage Link:</b> Storage symlink force-recreated.<br>";
 
         // 5. Performance Optimization: Cache all configurations and routes
         \Illuminate\Support\Facades\Artisan::call('config:cache');
