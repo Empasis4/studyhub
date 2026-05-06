@@ -350,17 +350,25 @@ class DashboardController extends Controller
         return view('dashboards.feedback', compact('submissions'));
     }
 
-    public function tutorStudents()
+    public function tutorStudents(Request $request)
     {
         $user = auth()->user();
-        $courseIds = Course::whereHas('modules', fn($q) => $q->where('TutorID', $user->UserID))->pluck('CourseID');
+        // Get all courses that have modules assigned to this tutor
+        $courses = Course::whereHas('modules', fn($q) => $q->where('TutorID', $user->UserID))->get();
         
-        $enrollments = Enrollment::whereIn('CourseID', $courseIds)
-            ->with(['student', 'course'])
-            ->latest()
-            ->paginate(20);
+        $query = Enrollment::with(['student', 'course']);
+
+        if ($request->has('course_id') && $request->course_id != '') {
+            $query->where('CourseID', $request->course_id);
+        } else {
+            $courseIds = $courses->pluck('CourseID');
+            $query->whereIn('CourseID', $courseIds);
+        }
+
+        $enrollments = $query->latest()->paginate(20);
+        $selectedCourse = $request->course_id;
             
-        return view('dashboards.tutor_students', compact('enrollments'));
+        return view('dashboards.tutor_students', compact('enrollments', 'courses', 'selectedCourse'));
     }
 
     public function gradeSubmission(Request $request, $id)
