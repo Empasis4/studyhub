@@ -12,7 +12,7 @@ class Assessment extends Model
     protected $table = 'assessments';
     protected $primaryKey = 'AssessmentID';
 
-    protected $fillable = ['LessonID', 'DueDate', 'TotalScore', 'Instructions', 'AttachmentURL'];
+    protected $fillable = ['LessonID', 'TutorID', 'DueDate', 'TotalScore', 'Instructions', 'AttachmentURL'];
 
     public function lesson()
     {

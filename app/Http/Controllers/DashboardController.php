@@ -260,17 +260,13 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Show assessments if the tutor owns the module OR the lesson
-        $assessments = Assessment::whereHas('lesson', function($q) use ($user) {
-                $q->where('TutorID', $user->UserID)
-                  ->orWhereHas('module', fn($mq) => $mq->where('TutorID', $user->UserID));
-            })
+        // Direct query by TutorID is now indexed and ultra-fast
+        $assessments = Assessment::where('TutorID', $user->UserID)
             ->with(['lesson.module.course', 'submissions.student'])
             ->withCount('submissions')
             ->latest()
             ->paginate(15);
         
-        // Get only lessons belonging to this tutor
         $lessons = Lesson::where('TutorID', $user->UserID)
             ->orWhereHas('module', fn($q) => $q->where('TutorID', $user->UserID))
             ->with('module.course')
@@ -290,6 +286,7 @@ class DashboardController extends Controller
         ]);
 
         $data = $request->only(['LessonID', 'DueDate', 'TotalScore', 'Instructions']);
+        $data['TutorID'] = auth()->user()->UserID; // Direct ownership link
 
         if ($request->hasFile('AttachmentFile')) {
             $path = $request->file('AttachmentFile')->store('attachments', 'public');

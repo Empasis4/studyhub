@@ -38,12 +38,26 @@
                     <a href="#">Tutors</a>
                     <a href="#">About</a>
                 </div>
+                @php
+                    $dashUrl = '/login';
+                    if(auth()->check()){
+                        $role = auth()->user()->role->RoleName;
+                        $dashUrl = $role == 'Super Admin' ? '/super-admin' : ($role == 'Admin' ? '/admin' : ($role == 'Tutor' ? '/tutor' : '/student'));
+                    }
+                @endphp
                 <div class="auth-btns">
-                    <a href="/login" class="btn" style="color: white; margin-right: 1rem;">Login</a>
-                    <a href="/login" class="btn btn-primary">Join StudyHub</a>
+                    @auth
+                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn" style="color: white; margin-right: 1rem; background: none; border: none; cursor: pointer; font-size: 1rem;">Logout</button>
+                        </form>
+                    @else
+                        <a href="/login" class="btn" style="color: white; margin-right: 1rem;">Login</a>
+                    @endauth
+                    <a href="{{ $dashUrl }}" class="btn btn-primary">Join StudyHub</a>
                 </div>
             </nav>
-
+ 
             <main class="hero-section">
                 <div class="hero-content">
                     <span class="badge badge-purple" style="margin-bottom: 1rem; display: inline-block;">All-in-One LMS</span>
@@ -51,8 +65,8 @@
                     <p class="lead">Integrated learning management for students, tutors, and administrators. Manage courses, track progress, and excel in your studies with StudyHub.</p>
                     
                     <div style="display: flex; gap: 1.5rem;">
-                        <a href="/login" class="btn btn-primary" style="padding: 1rem 2.5rem;">Get Started Free</a>
-                        <a href="/login" class="btn glass-card" style="padding: 1rem 2rem; color: #fff;">Explore Courses</a>
+                        <a href="{{ $dashUrl }}" class="btn btn-primary" style="padding: 1rem 2.5rem;">Get Started Free</a>
+                        <a href="{{ $dashUrl }}" class="btn glass-card" style="padding: 1rem 2rem; color: #fff;">Explore Courses</a>
                     </div>
 
                     <div class="stats-grid">

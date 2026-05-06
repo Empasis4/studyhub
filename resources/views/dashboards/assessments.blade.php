@@ -19,6 +19,16 @@
 </div>
 @endif
 
+@if($errors->any())
+<div style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem; color: #ef4444;">
+    <ul style="margin:0; padding-left:1.5rem;">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
 {{-- Assessment Table --}}
 <div class="glass-card" style="padding: 0; overflow: hidden;">
     <table style="width:100%; border-collapse:collapse;">
