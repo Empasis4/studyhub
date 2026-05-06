@@ -135,7 +135,11 @@ Route::get('/force-migrate', function () {
 
         $output .= "<b>3. Migration Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
         
-        // 4. Seed Data
+        // 4. Storage Link: Ensure files are publicly accessible
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        $output .= "<b>4. Storage Link:</b> Storage symlink recreated successfully.<br>";
+
+        // 5. Seed Data
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $output .= "<b>4. Seeding Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
