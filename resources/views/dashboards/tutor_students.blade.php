@@ -28,10 +28,11 @@
     @endforeach
 </div>
 
+@if($selectedCourse)
 {{-- Students Table --}}
 <div class="glass-card" style="padding: 0; overflow: hidden;">
     <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-        <h4 style="margin: 0;">{{ $selectedCourse ? 'Course Roster' : 'Global Student Roster' }}</h4>
+        <h4 style="margin: 0;">Course Roster</h4>
         <span class="badge badge-purple">{{ $enrollments->total() }} Students</span>
     </div>
     
@@ -73,7 +74,7 @@
             <tr>
                 <td colspan="4" style="padding:5rem; text-align:center; color:var(--text-muted);">
                     <i class="fas fa-users-slash" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
-                    No students found for this selection.
+                    No students found for this course.
                 </td>
             </tr>
             @endforelse
@@ -84,6 +85,15 @@
 <div style="margin-top: 2rem;">
     {{ $enrollments->appends(['course_id' => $selectedCourse])->links() }}
 </div>
+@else
+<div class="glass-card" style="padding: 4rem; text-align: center;">
+    <div style="font-size: 4rem; color: var(--primary); opacity: 0.2; margin-bottom: 1.5rem;">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    <h4 style="margin: 0; color: var(--text-main);">Please select a course above</h4>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;">Select a course to view its specific student roster and management tools.</p>
+</div>
+@endif
 
 <style>
     .active-course {
