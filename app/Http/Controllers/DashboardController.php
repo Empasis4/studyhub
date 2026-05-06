@@ -466,32 +466,36 @@ class DashboardController extends Controller
         return view('dashboards.browse', compact('courses', 'enrolled'));
     }
 
-    public function studentAssessments()
+    public function studentAssessments(Request $request)
     {
         $user = auth()->user();
+        // Get all enrolled courses
+        $enrollments = Enrollment::where('StudentID', $user->UserID)->with('course')->get();
+        $courses = $enrollments->pluck('course');
+
         $submissions = Submission::with(['assessment.lesson.module.course'])
             ->where('StudentID', $user->UserID)
             ->get();
 
-        $enrolledCourseIDs = Enrollment::where('StudentID', $user->UserID)->pluck('CourseID')->toArray();
+        $enrolledCourseIDs = $courses->pluck('CourseID')->toArray();
         
-        // Get all assessments from courses the student is enrolled in
-        // We use a more robust check to ensure nothing is hidden by mistake
-        $pendingAssessments = Assessment::whereHas('lesson.module', function($q) use ($enrolledCourseIDs) {
+        $query = Assessment::whereHas('lesson.module', function($q) use ($enrolledCourseIDs) {
                 $q->whereIn('CourseID', $enrolledCourseIDs);
             })
             ->whereDoesntHave('submissions', function($q) use ($user) {
                 $q->where('StudentID', $user->UserID);
-            })
-            ->with(['lesson.module.course'])
-            ->latest()
-            ->get();
-            
-        // Double check: if the tutor is the same, but enrollment is missing, 
-        // we could show it as "Recommended" but for now, we stick to enrolled courses
-        // but we ensure the relationship loading is deeper to prevent 404s.
+            });
 
-        return view('dashboards.student_assessments', compact('submissions', 'pendingAssessments'));
+        if ($request->has('course_id') && $request->course_id != '') {
+            $query->whereHas('lesson.module', function($q) use ($request) {
+                $q->where('CourseID', $request->course_id);
+            });
+        }
+
+        $pendingAssessments = $query->with(['lesson.module.course'])->latest()->get();
+        $selectedCourse = $request->course_id;
+
+        return view('dashboards.student_assessments', compact('submissions', 'pendingAssessments', 'courses', 'selectedCourse'));
     }
 
     public function enroll($course_id)
