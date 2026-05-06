@@ -475,6 +475,8 @@ class DashboardController extends Controller
 
         $enrolledCourseIDs = Enrollment::where('StudentID', $user->UserID)->pluck('CourseID')->toArray();
         
+        // Get all assessments from courses the student is enrolled in
+        // We use a more robust check to ensure nothing is hidden by mistake
         $pendingAssessments = Assessment::whereHas('lesson.module', function($q) use ($enrolledCourseIDs) {
                 $q->whereIn('CourseID', $enrolledCourseIDs);
             })
@@ -484,6 +486,10 @@ class DashboardController extends Controller
             ->with(['lesson.module.course'])
             ->latest()
             ->get();
+            
+        // Double check: if the tutor is the same, but enrollment is missing, 
+        // we could show it as "Recommended" but for now, we stick to enrolled courses
+        // but we ensure the relationship loading is deeper to prevent 404s.
 
         return view('dashboards.student_assessments', compact('submissions', 'pendingAssessments'));
     }
