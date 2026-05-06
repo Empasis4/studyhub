@@ -383,11 +383,12 @@ class DashboardController extends Controller
         return redirect()->route('tutor.feedback')->with('status', 'Submission graded successfully!');
     }
 
-    public function addLesson()
+    public function tutorLessons()
     {
         $user = auth()->user();
+        $lessons = Lesson::where('TutorID', $user->UserID)->with('module.course')->latest()->paginate(15);
         $modules = Module::where('TutorID', $user->UserID)->with('course')->get();
-        return view('dashboards.add-lesson', compact('modules'));
+        return view('dashboards.tutor-lessons', compact('lessons', 'modules'));
     }
 
     public function storeLesson(Request $request)
@@ -408,15 +409,15 @@ class DashboardController extends Controller
             'URL'         => $path,
             'TutorID'     => auth()->user()->UserID,
         ]);
-        return redirect()->route('tutor.courses')->with('status', 'Lesson created and content uploaded successfully!');
+        return redirect()->route('tutor.lessons')->with('status', 'Lesson created and content uploaded successfully!');
     }
 
-    public function createModule()
+    public function tutorModules()
     {
         $user = auth()->user();
-        // Show all courses (admin-managed or ones tutor already teaches)
+        $modules = Module::where('TutorID', $user->UserID)->with('course')->latest()->paginate(15);
         $courses = Course::all();
-        return view('dashboards.create-module', compact('courses'));
+        return view('dashboards.tutor-modules', compact('modules', 'courses'));
     }
 
     public function storeModule(Request $request)
@@ -434,7 +435,7 @@ class DashboardController extends Controller
 
         SystemLog::record('Created module: ' . $request->ModuleTitle);
 
-        return redirect()->route('tutor.courses')->with('status', 'Module created successfully!');
+        return redirect()->route('tutor.modules')->with('status', 'Module created successfully!');
     }
 
     // ──────────────────────────────────────────────────────

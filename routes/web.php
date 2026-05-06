@@ -60,9 +60,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/feedback',           [DashboardController::class, 'tutorFeedback'])->name('tutor.feedback');
         Route::get('/students',           [DashboardController::class, 'tutorStudents'])->name('tutor.students');
         Route::post('/feedback/{id}/grade', [DashboardController::class, 'gradeSubmission'])->name('tutor.feedback.grade');
-        Route::get('/lessons/add',        [DashboardController::class, 'addLesson'])->name('tutor.lessons.add');
+        Route::get('/lessons',            [DashboardController::class, 'tutorLessons'])->name('tutor.lessons');
         Route::post('/lessons/store',     [DashboardController::class, 'storeLesson'])->name('tutor.lessons.store');
-        Route::get('/modules/create',     [DashboardController::class, 'createModule'])->name('tutor.modules.create');
+        Route::get('/modules',            [DashboardController::class, 'tutorModules'])->name('tutor.modules');
         Route::post('/modules/store',     [DashboardController::class, 'storeModule'])->name('tutor.modules.store');
     });
 
