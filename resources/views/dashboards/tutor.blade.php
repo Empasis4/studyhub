@@ -27,15 +27,15 @@
                 <i class="fas fa-chalkboard-teacher" style="color:var(--primary);font-size:1.3rem;"></i>
                 <div><div style="font-weight:600;">My Courses</div><div style="font-size:0.8rem;color:var(--text-muted);">Manage curriculum</div></div>
             </a>
-            <a href="{{ route('tutor.modules.create') }}" class="glass-card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;text-decoration:none;transition:0.3s;"
+            <a href="{{ route('tutor.modules') }}" class="glass-card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;text-decoration:none;transition:0.3s;"
                onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
                 <i class="fas fa-layer-group" style="color:var(--secondary);font-size:1.3rem;"></i>
-                <div><div style="font-weight:600;">Create Module</div><div style="font-size:0.8rem;color:var(--text-muted);">Add new module</div></div>
+                <div><div style="font-weight:600;">Modules</div><div style="font-size:0.8rem;color:var(--text-muted);">Manage course modules</div></div>
             </a>
-            <a href="{{ route('tutor.lessons.add') }}" class="glass-card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;text-decoration:none;transition:0.3s;"
+            <a href="{{ route('tutor.lessons') }}" class="glass-card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;text-decoration:none;transition:0.3s;"
                onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--glass-border)'">
                 <i class="fas fa-play-circle" style="color:var(--accent);font-size:1.3rem;"></i>
-                <div><div style="font-weight:600;">Add Lesson</div><div style="font-size:0.8rem;color:var(--text-muted);">Upload content</div></div>
+                <div><div style="font-weight:600;">Lessons</div><div style="font-size:0.8rem;color:var(--text-muted);">Manage educational content</div></div>
             </a>
         </div>
     </div>
