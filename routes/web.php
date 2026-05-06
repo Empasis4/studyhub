@@ -139,7 +139,13 @@ Route::get('/force-migrate', function () {
         \Illuminate\Support\Facades\Artisan::call('storage:link');
         $output .= "<b>4. Storage Link:</b> Storage symlink recreated successfully.<br>";
 
-        // 5. Seed Data
+        // 5. Performance Optimization: Cache all configurations and routes
+        \Illuminate\Support\Facades\Artisan::call('config:cache');
+        \Illuminate\Support\Facades\Artisan::call('route:cache');
+        \Illuminate\Support\Facades\Artisan::call('view:cache');
+        $output .= "<b>5. Performance:</b> System optimized (Config/Route/View cache enabled).<br>";
+
+        // 6. Seed Data
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $output .= "<b>4. Seeding Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 

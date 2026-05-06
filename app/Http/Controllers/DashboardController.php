@@ -61,7 +61,7 @@ class DashboardController extends Controller
     public function student()
     {
         $user = auth()->user();
-        $enrollments = $user->enrollment()->with(['course.category', 'course.modules.lessons'])->latest()->get();
+        $enrollments = $user->enrollment()->with(['course.category', 'course.modules.lessons'])->latest()->take(6)->get();
         
         $stats = [
             'enrolled'      => $enrollments->count(),
