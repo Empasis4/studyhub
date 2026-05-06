@@ -35,7 +35,10 @@
         </form>
         
         <p style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
-            Don't have an account? <a href="#" style="color: var(--primary); text-decoration: none;">Join now</a>
+            Don't have an account? <br>
+            <a href="{{ route('register') }}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Register as Student</a>
+            <span style="margin: 0 0.5rem;">|</span>
+            <a href="{{ route('register.tutor') }}" style="color: var(--secondary); text-decoration: none; font-weight: 600;">Join as Tutor</a>
         </p>
     </div>
 </body>

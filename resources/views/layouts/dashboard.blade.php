@@ -74,6 +74,7 @@
             
             @if(auth()->user()->role->RoleName == 'Super Admin')
                 <a href="{{ route('super.admin.users') }}" class="nav-item {{ Request::is('*/users') ? 'active' : '' }}"><i class="fas fa-users-cog"></i> Manage Users</a>
+                <a href="{{ route('super.admin.tutors.pending') }}" class="nav-item {{ Request::is('*/tutors/pending') ? 'active' : '' }}"><i class="fas fa-user-shield"></i> Instructor Applications</a>
                 <a href="{{ route('super.admin.logs') }}" class="nav-item {{ Request::is('*/logs') ? 'active' : '' }}"><i class="fas fa-history"></i> System Logs</a>
             @endif
 

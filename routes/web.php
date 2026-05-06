@@ -12,6 +12,12 @@ Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout',[AuthController::class, 'logout'])->name('logout');
 
+// Registration
+Route::get('/register', [AuthController::class, 'showRegisterStudent'])->name('register');
+Route::post('/register', [AuthController::class, 'registerStudent']);
+Route::get('/register-tutor', [AuthController::class, 'showRegisterTutor'])->name('register.tutor');
+Route::post('/register-tutor', [AuthController::class, 'registerTutor']);
+
 // Dashboard Routes
 Route::middleware(['auth'])->group(function () {
 
@@ -23,6 +29,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/users/{id}/toggle', [DashboardController::class, 'toggleUserStatus'])->name('super.admin.users.toggle');
         Route::delete('/users/{id}/delete', [DashboardController::class, 'deleteUser'])->name('super.admin.users.delete');
         Route::get('/logs',  [DashboardController::class, 'systemLogs'])->name('super.admin.logs');
+        Route::get('/tutors/pending', [DashboardController::class, 'pendingTutors'])->name('super.admin.tutors.pending');
+        Route::post('/tutors/{id}/approve', [DashboardController::class, 'approveTutor'])->name('super.admin.tutors.approve');
+        Route::post('/tutors/{id}/reject', [DashboardController::class, 'rejectTutor'])->name('super.admin.tutors.reject');
     });
 
     // ── Admin ────────────────────────────────────────────
@@ -89,8 +98,26 @@ Route::get('/force-migrate', function () {
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         $output .= "<b>2. Cache Cleared:</b> System optimized for speed.<br>";
 
-        // 3. Run Migrations
+        // 3. Run Migrations & Column Fixes
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        
+        // FOOLPROOF COLUMN FIX: Add Description to courses if missing
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('courses', 'Description')) {
+            \Illuminate\Support\Facades\Schema::table('courses', function ($table) {
+                $table->text('Description')->nullable()->after('Title');
+            });
+            $output .= "<b>3. Database Fix:</b> Added missing 'Description' column to courses.<br>";
+        }
+
+        // FOOLPROOF COLUMN FIX: Add TutorID to assessments if missing
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('assessments', 'TutorID')) {
+            \Illuminate\Support\Facades\Schema::table('assessments', function ($table) {
+                $table->unsignedBigInteger('TutorID')->nullable()->after('LessonID');
+                $table->foreign('TutorID')->references('UserID')->on('users')->onDelete('set null');
+            });
+            $output .= "<b>3. Database Fix:</b> Added missing 'TutorID' column to assessments.<br>";
+        }
+
         $output .= "<b>3. Migration Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
         
         // 4. Seed Data

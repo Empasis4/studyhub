@@ -20,6 +20,7 @@ class User extends Authenticatable
         'Password',
         'RoleID',
         'Status',
+        'LicenseURL',
     ];
 
     protected $hidden = [

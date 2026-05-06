@@ -53,16 +53,24 @@ class DashboardController extends Controller
         $stats = [
             'modules'          => Module::where('TutorID', $user->UserID)->count(),
             'courses_teaching' => Course::whereHas('modules', fn($q) => $q->where('TutorID', $user->UserID))->count(),
-            'assessments'      => Assessment::whereHas('lesson.module', fn($q) => $q->where('TutorID', $user->UserID))->count(),
+            'assessments'      => Assessment::where('TutorID', $user->UserID)->count(),
         ];
         return view('dashboards.tutor', compact('stats'));
     }
 
     public function student()
     {
-        $enrollments = auth()->user()->enrollment()->with(['course.category', 'course.modules.lessons'])->get();
-        $notifications = Notification::where('UserID', auth()->user()->UserID)->where('IsRead', 0)->count();
-        return view('dashboards.student', compact('enrollments', 'notifications'));
+        $user = auth()->user();
+        $enrollments = $user->enrollment()->with(['course.category', 'course.modules.lessons'])->latest()->get();
+        
+        $stats = [
+            'enrolled'      => $enrollments->count(),
+            'completed'     => $enrollments->where('ProgressPercentage', 100)->count(),
+            'avg_progress'  => round($enrollments->avg('ProgressPercentage') ?? 0),
+            'notifications' => Notification::where('UserID', $user->UserID)->where('IsRead', false)->count(),
+        ];
+        
+        return view('dashboards.student', compact('enrollments', 'stats'));
     }
 
     // ──────────────────────────────────────────────────────
@@ -131,6 +139,34 @@ class DashboardController extends Controller
         return view('dashboards.system-logs', compact('logs'));
     }
 
+    public function pendingTutors()
+    {
+        $tutors = User::where('RoleID', 3)->where('Status', 'Pending')->get();
+        return view('dashboards.pending-tutors', compact('tutors'));
+    }
+
+    public function approveTutor($id)
+    {
+        $user = User::findOrFail($id);
+        $user->Status = 'Active';
+        $user->save();
+
+        SystemLog::record('Approved tutor: ' . $user->Email);
+
+        return redirect()->back()->with('status', 'Tutor account approved and activated!');
+    }
+
+    public function rejectTutor($id)
+    {
+        $user = User::findOrFail($id);
+        $email = $user->Email;
+        $user->delete();
+
+        SystemLog::record('Rejected/Deleted pending tutor: ' . $email);
+
+        return redirect()->back()->with('status', 'Tutor application rejected.');
+    }
+
     // ──────────────────────────────────────────────────────
     // ADMIN FEATURES
     // ──────────────────────────────────────────────────────
@@ -151,19 +187,22 @@ class DashboardController extends Controller
     public function storeCourse(Request $request)
     {
         $request->validate([
-            'Title'      => 'required|string|max:255',
-            'CategoryID' => 'required|integer',
-            'Price'      => 'required|numeric|min:0',
-        ]);
-        Course::create([
-            'Title'      => $request->Title,
-            'Description'=> $request->Description,
-            'CategoryID' => $request->CategoryID,
-            'AdminID'    => auth()->user()->UserID,
-            'Price'      => $request->Price,
+            'Title'       => 'required|string|max:255',
+            'CategoryID'  => 'required|integer|exists:categories,CategoryID',
+            'Description' => 'nullable|string|max:1000',
+            'Price'       => 'required|numeric|min:0',
+            'AdminID'     => 'required|integer|exists:users,UserID',
         ]);
 
-        SystemLog::record('Course created: ' . $request->Title, $request);
+        Course::create([
+            'Title'       => $request->Title,
+            'Description' => $request->Description,
+            'CategoryID'  => $request->CategoryID,
+            'AdminID'     => $request->AdminID,
+            'Price'       => $request->Price,
+        ]);
+
+        SystemLog::record('Created course: ' . $request->Title, $request);
 
         return redirect()->route('admin.courses')->with('status', 'Course created successfully!');
     }
@@ -384,11 +423,15 @@ class DashboardController extends Controller
             'CourseID'    => 'required|integer|exists:courses,CourseID',
             'ModuleTitle' => 'required|string|max:255',
         ]);
+
         Module::create([
             'CourseID'    => $request->CourseID,
             'ModuleTitle' => $request->ModuleTitle,
             'TutorID'     => auth()->user()->UserID,
         ]);
+
+        SystemLog::record('Created module: ' . $request->ModuleTitle);
+
         return redirect()->route('tutor.courses')->with('status', 'Module created successfully!');
     }
 
@@ -530,6 +573,16 @@ class DashboardController extends Controller
         }
 
         return redirect()->back()->with('status', 'Assessment submitted successfully!');
+    }
+
+    public function manageStudents()
+    {
+        $user = auth()->user();
+        $students = User::whereHas('enrollment.course.modules', fn($q) => $q->where('TutorID', $user->UserID))
+            ->with('enrollment.course')
+            ->distinct()
+            ->paginate(15);
+        return view('dashboards.tutor-students', compact('students'));
     }
 
     public function notifications()

@@ -6,19 +6,19 @@
 <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 3rem;">
     <div class="card-stat">
         <div style="color:var(--text-muted);font-size:0.9rem;"><i class="fas fa-book-open" style="margin-right:0.4rem;"></i>Enrolled Courses</div>
-        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;">{{ count($enrollments) }}</div>
+        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;">{{ $stats['enrolled'] }}</div>
     </div>
     <div class="card-stat">
         <div style="color:var(--text-muted);font-size:0.9rem;"><i class="fas fa-check-circle" style="margin-right:0.4rem;"></i>Completed</div>
-        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:#10b981;">{{ $enrollments->where('ProgressPercentage',100)->count() }}</div>
+        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:#10b981;">{{ $stats['completed'] }}</div>
     </div>
     <div class="card-stat">
         <div style="color:var(--text-muted);font-size:0.9rem;"><i class="fas fa-chart-line" style="margin-right:0.4rem;"></i>Avg. Progress</div>
-        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:var(--accent);">{{ count($enrollments) > 0 ? round($enrollments->avg('ProgressPercentage')) : 0 }}%</div>
+        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:var(--accent);">{{ $stats['avg_progress'] }}%</div>
     </div>
     <div class="card-stat">
         <div style="color:var(--text-muted);font-size:0.9rem;"><i class="fas fa-bell" style="margin-right:0.4rem;"></i>Notifications</div>
-        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:#fbbf24;">{{ $notifications }}</div>
+        <div style="font-size:2rem;font-weight:700;margin-top:0.5rem;color:#fbbf24;">{{ $stats['notifications'] }}</div>
     </div>
 </div>
 
@@ -38,8 +38,8 @@
        onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--glass-border)'">
         <i class="fas fa-bell" style="font-size:2rem;color:var(--secondary);margin-bottom:1rem;"></i>
         <div style="font-weight:600;">Notifications</div>
-        @if($notifications > 0)
-        <span style="background:var(--primary);color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.75rem;">{{ $notifications }} new</span>
+        @if($stats['notifications'] > 0)
+        <span style="background:var(--primary);color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.75rem;">{{ $stats['notifications'] }} new</span>
         @endif
     </a>
 </div>
