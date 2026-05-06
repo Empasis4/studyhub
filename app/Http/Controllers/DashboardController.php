@@ -321,7 +321,10 @@ class DashboardController extends Controller
             'DueDate'        => 'required|date',
             'TotalScore'     => 'required|integer|min:1',
             'Instructions'   => 'nullable|string',
-            'AttachmentFile' => 'nullable|file|mimes:pdf,doc,docx,zip,jpg,png|max:5120',
+            'AttachmentFile' => 'nullable|file|mimes:pdf,doc,docx,zip,jpg,png|max:10240', // 10MB
+        ], [
+            'AttachmentFile.max' => 'The attachment is too large. Max size is 10MB.',
+            'AttachmentFile.uploaded' => 'Upload failed. The file might be larger than the server limit.',
         ]);
 
         $data = $request->only(['LessonID', 'DueDate', 'TotalScore', 'Instructions']);
