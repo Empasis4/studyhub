@@ -10,6 +10,12 @@
         @endif
 
         <div style="margin-bottom: 1.5rem;">
+            <label style="display:block; color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Lesson Title</label>
+            <input type="text" name="Title" required placeholder="e.g. Lesson 1: Introduction to HTML" 
+                   style="width:100%; padding:1rem; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; color:var(--text-main); font-size:1rem; outline:none;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
             <label style="display:block; color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Select Module</label>
             <select name="ModuleID" required style="width:100%; padding:1rem; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; color:var(--text-main); font-size:1rem; appearance:none;">
                 <option value="" disabled selected>Choose a module…</option>

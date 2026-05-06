@@ -12,7 +12,7 @@ class Lesson extends Model
     protected $table = 'lessons';
     protected $primaryKey = 'LessonID';
 
-    protected $fillable = ['ModuleID', 'ContentType', 'URL', 'TutorID'];
+    protected $fillable = ['ModuleID', 'Title', 'ContentType', 'URL', 'TutorID'];
 
     public function module()
     {

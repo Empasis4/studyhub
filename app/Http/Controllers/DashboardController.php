@@ -307,8 +307,8 @@ class DashboardController extends Controller
             ->paginate(15);
         
         $lessons = Lesson::where('TutorID', $user->UserID)
-            ->orWhereHas('module', fn($q) => $q->where('TutorID', $user->UserID))
             ->with('module.course')
+            ->orderBy('created_at', 'asc')
             ->get();
         
         return view('dashboards.assessments', compact('assessments', 'lessons'));
@@ -394,6 +394,7 @@ class DashboardController extends Controller
     {
         $request->validate([
             'ModuleID'    => 'required|integer|exists:modules,ModuleID',
+            'Title'       => 'required|string|max:255',
             'ContentType' => 'required|string',
             'LessonFile'  => 'required|file|mimes:mp4,mov,avi,pdf|max:102400', // 100MB max
         ]);
@@ -402,6 +403,7 @@ class DashboardController extends Controller
 
         Lesson::create([
             'ModuleID'    => $request->ModuleID,
+            'Title'       => $request->Title,
             'ContentType' => $request->ContentType,
             'URL'         => $path,
             'TutorID'     => auth()->user()->UserID,

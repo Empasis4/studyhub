@@ -141,7 +141,7 @@
                 <select name="LessonID" required style="width:100%; padding:0.9rem; background:var(--bg-dark); border:1px solid var(--glass-border); border-radius:12px; color:white;">
                     <option value="">— Choose a lesson —</option>
                     @foreach($lessons ?? [] as $lesson)
-                        <option value="{{ $lesson->LessonID }}">{{ $lesson->module->course->Title ?? '' }} → {{ $lesson->module->ModuleTitle ?? '' }}</option>
+                        <option value="{{ $lesson->LessonID }}">{{ $lesson->Title ?? 'Lesson' }} ({{ $lesson->module->course->Title ?? '' }})</option>
                     @endforeach
                 </select>
             </div>

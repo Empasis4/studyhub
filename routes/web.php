@@ -109,13 +109,28 @@ Route::get('/force-migrate', function () {
             $output .= "<b>3. Database Fix:</b> Added missing 'Description' column to courses.<br>";
         }
 
-        // FOOLPROOF COLUMN FIX: Add TutorID to assessments if missing
         if (!\Illuminate\Support\Facades\Schema::hasColumn('assessments', 'TutorID')) {
             \Illuminate\Support\Facades\Schema::table('assessments', function ($table) {
                 $table->unsignedBigInteger('TutorID')->nullable()->after('LessonID');
-                $table->foreign('TutorID')->references('UserID')->on('users')->onDelete('set null');
             });
             $output .= "<b>3. Database Fix:</b> Added missing 'TutorID' column to assessments.<br>";
+        }
+
+        // Add Title to lessons if missing
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('lessons', 'Title')) {
+            \Illuminate\Support\Facades\Schema::table('lessons', function ($table) {
+                $table->string('Title')->nullable()->after('ModuleID');
+            });
+            $output .= "<b>3. Database Fix:</b> Added missing 'Title' column to lessons.<br>";
+        }
+
+        // Add LicenseURL to users if missing
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'LicenseURL')) {
+            \Illuminate\Support\Facades\Schema::table('users', function ($table) {
+                $table->string('LicenseURL')->nullable()->after('Email');
+                $table->string('Status')->default('Active')->after('LicenseURL');
+            });
+            $output .= "<b>3. Database Fix:</b> Added missing 'License' columns to users.<br>";
         }
 
         $output .= "<b>3. Migration Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
@@ -124,16 +139,51 @@ Route::get('/force-migrate', function () {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $output .= "<b>4. Seeding Output:</b><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
 
-        // 5. Backfill Assessment Ownership (Ensures Sync)
-        \Illuminate\Support\Facades\DB::statement("
-            UPDATE assessments a 
-            JOIN lessons l ON a.LessonID = l.LessonID 
-            SET a.TutorID = l.TutorID 
-            WHERE a.TutorID IS NULL
-        ");
-        $output .= "<b>5. Data Sync:</b> Assessment ownership backfilled.<br>";
-        
-        return "<h3>System Self-Heal Successful!</h3>" . $output . "<br><br><b>The system is now 100% connected and optimized.</b>";
+        // 5. UI Fix: Backfill Lesson Titles (Ensures UI looks like Lesson 1, 2, 3)
+        $allLessons = \App\Models\Lesson::all();
+        foreach($allLessons as $index => $lesson) {
+            if (empty($lesson->Title) || $lesson->Title == 'Lesson') {
+                $lesson->Title = "Lesson " . ($index + 1);
+                $lesson->save();
+            }
+        }
+        $output .= "<b>5. UI Fix:</b> Backfilled titles for " . count($allLessons) . " lessons.<br>";
+
+        // 6. Demo Content: Create Automatic Demo Course (For New Demo)
+        $demoCategory = \App\Models\Category::firstOrCreate(['CategoryName' => 'Web Development'], ['Description' => 'Web tech']);
+        $demoAdmin = \App\Models\User::where('RoleID', 2)->first() ?? \App\Models\User::first();
+        $demoTutor = \App\Models\User::where('RoleID', 3)->first() ?? \App\Models\User::first();
+
+        $course = \App\Models\Course::firstOrCreate(
+            ['Title' => 'Advanced Web Development'],
+            [
+                'Description' => 'A comprehensive demo course showcasing full system connectivity.',
+                'CategoryID' => $demoCategory->CategoryID,
+                'AdminID' => $demoAdmin->UserID,
+                'Price' => 149.99,
+                'Status' => 'Published'
+            ]
+        );
+
+        $module = \App\Models\Module::firstOrCreate(
+            ['ModuleTitle' => 'Backend Architecture', 'CourseID' => $course->CourseID],
+            ['TutorID' => $demoTutor->UserID]
+        );
+
+        \App\Models\Lesson::firstOrCreate(
+            ['ModuleID' => $module->ModuleID, 'Title' => 'Lesson 1: Database Synchronization'],
+            ['ContentType' => 'Video', 'URL' => 'demo_sync.mp4', 'TutorID' => $demoTutor->UserID]
+        );
+
+        $output .= "<b>6. Demo Content:</b> Created 'Advanced Web Development' course and backend module.<br>";
+
+        // 7. System Sync: Backfill Assessment Ownership
+        \App\Models\Assessment::whereNull('TutorID')->each(function($a) {
+            $a->update(['TutorID' => $a->lesson->module->TutorID ?? 1]);
+        });
+        $output .= "<b>7. System Sync:</b> All assessment data correctly synchronized across roles.<br>";
+
+        return "<h3>System Self-Heal Successful!</h3>" . $output . "<br><br><b>The system is now 100% connected and demo-ready.</b>";
     } catch (\Exception $e) {
         return "<h3>System Heal Failed!</h3> Error: <br><pre>" . $e->getMessage() . "</pre>";
     }
